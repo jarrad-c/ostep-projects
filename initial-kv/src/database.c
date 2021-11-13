@@ -108,13 +108,16 @@ int del(database_t *db, int key) {
 
 int clear(database_t *db) {
 	printf("Clearing database\n");
-	// TODO
-	return -1;
+	for (int key = 0; key < db->size; ++key) {
+		del(db, key);
+	}
+	return 0;
 }
 
 int all(database_t *db, char ***buffer) {
-	printf("Getting all keyvals\n");
-	// TODO
+	printf("Getting all keyvals (NOT YET IMPLEMENTED\n");
+	//TODO
+
 	return -1;
 }
 

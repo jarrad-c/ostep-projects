@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NUM_OPS 5
-
-
 typedef enum operation {GET, PUT, DELETE, CLEAR, ALL} operation_t;
 
 int get_cmd(char *, operation_t *, int *, char **);
+int execute_cmd(operation_t *, int, char *);
 int extract_keyval(char *, int *, char **);
 
 int main(int argc, char **argv) {
@@ -20,6 +18,7 @@ int main(int argc, char **argv) {
 			continue;
 		}
 		printf("Got commmand %d with key %d value %s", op, key, value);
+
 	}
 	exit(0);
 }
@@ -67,3 +66,6 @@ int extract_keyval(char *command, int *key, char **value) {
 	return 0;
 }
 
+int execute_cmd(operation_t *op, int key, char *value) {
+	return -1;	
+}
