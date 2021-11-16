@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "inc/database.h"
 
 typedef enum operation {GET, PUT, DELETE, CLEAR, ALL} operation_t;
 
 int get_cmd(char *, operation_t *, int *, char **);
-int execute_cmd(operation_t *, int, char *);
+int execute_cmd(operation_t, int, char *);
 int extract_keyval(char *, int *, char **);
 
 int main(int argc, char **argv) {
@@ -66,6 +67,15 @@ int extract_keyval(char *command, int *key, char **value) {
 	return 0;
 }
 
-int execute_cmd(operation_t *op, int key, char *value) {
-	return -1;	
+int execute_cmd(operation_t op, int key, char *value) {
+	switch (op) {
+		case PUT:
+			if (put(key, value) == -1) {
+				fprintf(stderr, "Failed to put %s at %d", value, key);
+				exit(1);
+			}
+		case default:
+			fprintf(stderr, "Command %d not yet supported", op);
+			exit(1);
+	}
 }
