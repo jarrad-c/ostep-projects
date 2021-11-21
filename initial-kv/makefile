@@ -1,7 +1,9 @@
+SRCDIR = src
 
-SRCS = src/kv.c src/database.c
-INC = inc/
+SRCS = $(SRCDIR)/kv.c $(SRCDIR)/database.c
+INC = inc
 TARG = kv
+
 CC = gcc
 OPTS = -Wall -O
 
