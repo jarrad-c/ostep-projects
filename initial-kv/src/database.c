@@ -1,4 +1,4 @@
-#include "inc/database.h"
+#include "database.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -46,7 +46,7 @@ void free_db(database_t *db) {
 database_t *load_database(char *db_path) {
 	database_t *db = alloc_db();
 
-	FILE *fp = fopen(db_path, "r");
+	FILE *fp = fopen(db_path, "a+");
 	if (fp == NULL) {
 		perror("error loading database file");
 		return NULL;	

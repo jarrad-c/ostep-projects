@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "inc/database.h"
+#include "database.h"
 
 typedef enum operation {GET, PUT, DELETE, CLEAR, ALL} operation_t;
 
 int get_cmd(char *, operation_t *, int *, char **);
-int execute_cmd(operation_t, int, char *);
+int execute_cmd(database_t *, operation_t, int, char *);
 int extract_keyval(char *, int *, char **);
 
 int main(int argc, char **argv) {
+	database_t *db = load_database("db.txt");
 	for (int i=1; i < argc; i++) {
 		operation_t op;
 		int key;
@@ -18,8 +19,8 @@ int main(int argc, char **argv) {
 			fputs("bad command", stderr);
 			continue;
 		}
-		printf("Got commmand %d with key %d value %s", op, key, value);
-
+		printf("Got commmand %d with key %d value %s\n", op, key, value);
+		execute_cmd(db, op, key, value);
 	}
 	exit(0);
 }
@@ -67,15 +68,17 @@ int extract_keyval(char *command, int *key, char **value) {
 	return 0;
 }
 
-int execute_cmd(operation_t op, int key, char *value) {
+int execute_cmd(database_t *db, operation_t op, int key, char *value) {
 	switch (op) {
 		case PUT:
-			if (put(key, value) == -1) {
+			if (put(db, key, value) == -1) {
 				fprintf(stderr, "Failed to put %s at %d", value, key);
 				exit(1);
 			}
-		case default:
+			break;
+		default:
 			fprintf(stderr, "Command %d not yet supported", op);
 			exit(1);
 	}
+	return 0;
 }
