@@ -5,7 +5,7 @@ INC = inc
 TARG = kv
 
 CC = gcc
-OPTS = -Wall -O
+OPTS = -Wall -O -g
 
 OBJS = $(SRCS:.c=.o)
 
