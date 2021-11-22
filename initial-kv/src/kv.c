@@ -10,7 +10,7 @@ int execute_cmd(database_t *, operation_t, int, char *);
 int extract_keyval(char *, int *, char **);
 
 int main(int argc, char **argv) {
-	database_t *db = load_database("db.txt");
+	database_t *db = load_database("database.txt");
 	for (int i=1; i < argc; i++) {
 		operation_t op;
 		int key;
@@ -19,9 +19,18 @@ int main(int argc, char **argv) {
 			fputs("bad command", stderr);
 			continue;
 		}
-		printf("Got commmand %d with key %d value %s\n", op, key, value);
-		execute_cmd(db, op, key, value);
+		// printf("Got commmand %d with key %d value %s\n", op, key, value);
+		if (execute_cmd(db, op, key, value) == -1) {
+			free_db(db);
+			exit(1);
+		}
 	}
+	if (save_database(db, "database.txt") == -1) {
+		fputs("Error saving database", stderr);
+		free_db(db);
+		exit(1);
+	}
+	free_db(db);
 	exit(0);
 }
 
@@ -61,8 +70,6 @@ int extract_keyval(char *command, int *key, char **value) {
 	char *key_s = strsep(&command, ",");
 	if (key_s == NULL || *key_s == '\0') 
 		return -1;
-	if (command == NULL || *command == '\0')
-		return -1;
 	*key = atoi(key_s);
 	*value = command;
 	return 0;
@@ -73,12 +80,26 @@ int execute_cmd(database_t *db, operation_t op, int key, char *value) {
 		case PUT:
 			if (put(db, key, value) == -1) {
 				fprintf(stderr, "Failed to put %s at %d", value, key);
-				exit(1);
+				return -1;
+			}
+			break;
+		case GET:
+			char *value;
+			if (get(db, key, &value) == -1) {
+				printf("%d not found\n", key);
+				return 0;
+			}
+			printf("%d,%s\n", key, value);
+			break;
+		case DELETE:
+			if (del(db, key) == -1) {
+				fprintf(stderr, "Failed to delete value for key %d\n", key);
+				return -1;
 			}
 			break;
 		default:
 			fprintf(stderr, "Command %d not yet supported", op);
-			exit(1);
+			return -1;
 	}
 	return 0;
 }

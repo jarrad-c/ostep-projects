@@ -6,8 +6,11 @@
 static const int INIT_DB_SIZE = 100;
 
 static int parse_entry(char *line, int *key, char **value) {
-	char *key_s = strsep(value, ",");
+	char *key_s = strsep(&line, ",");
+	if (key_s == NULL || *key_s == '\0')
+		return -1;
 	*key = atoi(key_s);
+	*value = line;
 	return 0;
 }
 
@@ -54,35 +57,56 @@ database_t *load_database(char *db_path) {
 	
 	char *line = NULL;
 	size_t linecap = 0;
-	while (getline(&line, &linecap, fp) > 0) {
+	int len;
+	while ((len = getline(&line, &linecap, fp)) > 0) {
+		if (line[len - 1] == '\n') {
+			line[len - 1] = '\0';
+		}
 		int key;
 		char *value;
 		if (parse_entry(line, &key, &value) != 0) {
-			fprintf(stderr, "Error parsing line '%s'", line);
+			fprintf(stderr, "Error parsing line '%s'\n", line);
 			continue;
 		}
 		put(db, key, value);
 	}
+	fclose(fp);
 	return db;
 }
 
 int save_database(database_t *db, char *db_path) {
-	return -1;
+	FILE *fp = fopen(db_path, "w");
+	if (fp == NULL) {
+		perror("error opening database file");
+		return -1;
+	}
+
+	for (int key=0; key < db->size; ++key) {
+		char *value = db->table[key];
+		if (value != NULL) {
+			fprintf(fp, "%d,%s\n", key, value); 
+		}
+	}
+	fclose(fp);
+	return 0;
 }
 
 int put(database_t *db, int key, char *val) {
-	printf("Putting '%s' at val %d\n", val, key);
+	// printf("Putting '%s' at val %d\n", val, key);
 	if (key >= db->size) {
 		if (realloc_db(db, key + 1) != 0) {
 			return -1;
 		}
 	}
-	db->table[key] = val;
+
+	int len = strlen(val);
+	char *valCopy = (char *) malloc(len * sizeof(char));
+	db->table[key] = strcpy(valCopy, val);
 	return 0;
 }
 
 int get(database_t *db, int key, char **val) {
-	printf("Getting value for key %d\n", key);
+	// printf("Getting value for key %d\n", key);
 	if (key >= db->size) {
 		return -1;
 	}
@@ -94,7 +118,7 @@ int get(database_t *db, int key, char **val) {
 }
 
 int del(database_t *db, int key) {
-	printf("Deleting value for key %d\n",  key);
+	// printf("Deleting value for key %d\n",  key);
 	if (key >= db->size) {
 		return -1;
 	}
@@ -107,7 +131,7 @@ int del(database_t *db, int key) {
 }
 
 int clear(database_t *db) {
-	printf("Clearing database\n");
+	// printf("Clearing database\n");
 	for (int key = 0; key < db->size; ++key) {
 		del(db, key);
 	}
