@@ -4,8 +4,8 @@ SRCS = $(SRCDIR)/kv.c $(SRCDIR)/database.c
 INC = inc
 TARG = kv
 
-CC = gcc
-OPTS = -Wall -O -g
+CC = clang
+OPTS = -Wall -Werror -O -g
 
 OBJS = $(SRCS:.c=.o)
 
