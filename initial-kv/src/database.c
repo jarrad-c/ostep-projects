@@ -1,4 +1,5 @@
 #include "database.h"
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -46,22 +47,33 @@ void free_db(database_t *db) {
 	free(db);
 }
 
-database_t *load_database(char *db_path) {
+database_t *load_database(char *path) {
 	database_t *db = alloc_db();
 
-	FILE *fp = fopen(db_path, "a+");
+	int fd = open(path, O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		perror("error loading database file");
+		free_db(db);
+		return NULL;
+	}
+
+	FILE *fp = fdopen(fd, "r");
 	if (fp == NULL) {
 		perror("error loading database file");
+		free_db(db);
 		return NULL;	
 	}
 	
 	char *line = NULL;
 	size_t linecap = 0;
-	int len;
+	ssize_t len;
 	while ((len = getline(&line, &linecap, fp)) > 0) {
 		if (line[len - 1] == '\n') {
 			line[len - 1] = '\0';
 		}
+		if (*line == '\0')
+			// empty line	
+			continue;
 		int key;
 		char *value;
 		if (parse_entry(line, &key, &value) != 0) {
@@ -131,7 +143,6 @@ int del(database_t *db, int key) {
 }
 
 int clear(database_t *db) {
-	// printf("Clearing database\n");
 	for (int key = 0; key < db->size; ++key) {
 		del(db, key);
 	}

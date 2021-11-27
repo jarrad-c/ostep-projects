@@ -11,6 +11,10 @@ int extract_keyval(char *, int *, char **);
 
 int main(int argc, char **argv) {
 	database_t *db = load_database("database.txt");
+	if (db == NULL) {
+		fputs("Failed to load database", stderr);
+		exit(1);
+	}
 	for (int i=1; i < argc; i++) {
 		operation_t op;
 		int key;
@@ -84,7 +88,6 @@ int execute_cmd(database_t *db, operation_t op, int key, char *value) {
 			}
 			break;
 		case GET:
-			char *value;
 			if (get(db, key, &value) == -1) {
 				printf("%d not found\n", key);
 				return 0;
@@ -94,6 +97,12 @@ int execute_cmd(database_t *db, operation_t op, int key, char *value) {
 		case DELETE:
 			if (del(db, key) == -1) {
 				fprintf(stderr, "Failed to delete value for key %d\n", key);
+				return -1;
+			}
+			break;
+		case CLEAR:
+			if (clear(db) == -1) {
+				fputs("Failed to clear database", stderr);
 				return -1;
 			}
 			break;
