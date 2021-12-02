@@ -149,11 +149,13 @@ int clear(database_t *db) {
 	return 0;
 }
 
-int all(database_t *db, char ***buffer) {
-	printf("Getting all keyvals (NOT YET IMPLEMENTED\n");
-	//TODO
-
-	return -1;
+int print_all(database_t *db) {
+	for (int key = 0; key < db->size; ++key) {
+		if (db->table[key] != NULL) {
+			printf("%d,%s\n", key, db->table[key]);
+		}
+	}
+	return 0;
 }
 
 

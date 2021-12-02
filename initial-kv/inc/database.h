@@ -15,7 +15,7 @@ int put(database_t *, int, char *);
 int get(database_t *, int, char **);
 int del(database_t *, int);
 int clear(database_t *);
-int all(database_t *, char ***);
+int print_all(database_t *);
 
 
 #endif

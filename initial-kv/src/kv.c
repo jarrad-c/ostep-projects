@@ -106,6 +106,12 @@ int execute_cmd(database_t *db, operation_t op, int key, char *value) {
 				return -1;
 			}
 			break;
+		case ALL:
+			if (print_all(db) == -1) {
+				fputs("Failed to print all entries", stderr);
+				return -1;
+			}
+			break;
 		default:
 			fprintf(stderr, "Command %d not yet supported", op);
 			return -1;
