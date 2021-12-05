@@ -1,0 +1,4 @@
+[submodule "initial-xv6/src"]
+	path = initial-xv6/src
+	url = git@github.com:jarrad-c/xv6-riscv.git
+	branch = initial-xv6
