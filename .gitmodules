@@ -2,3 +2,7 @@
 	path = initial-xv6/src
 	url = git@github.com:jarrad-c/xv6-riscv.git
 	branch = initial-xv6
+[submodule "scheduling-xv6-lottery/xv6-riscv"]
+	path = scheduling-xv6-lottery/xv6-riscv
+	url = git@github.com:jarrad-c/xv6-riscv.git
+	branch = scheduling-xv6-lottery
